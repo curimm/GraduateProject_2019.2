@@ -54,28 +54,79 @@ public class TerrainCreator : MonoBehaviour
     [SerializeField]
     private Terrain terrain;
 
+    // 생성할 산의 최대 높이
     [SerializeField]
-    private float roughnessFactor =0.51f;
+    private float roughnessFactor = 0.51f;
     // change 될경우 얼마나 올라갈지 지정
 
+    // 생성할 산의 개수
     [SerializeField]
     private int changeCount = 5;
 
+    // 처음 생성할때의 렌덤 최대 높이
     [SerializeField]
     private float defaultRandomHeightMax = 0.01f;
 
+    // 0.0f ~ 1.0f사이의 값 // 경사 정도
+    [SerializeField]
+    private float slope;
+
     List<TerrainCreatorData> terrainCreatorData;
 
-    
+    // 배치에 사용할 프리팹
+    // 나무 / 돌 / 캘 수 있는 자원들
+    [SerializeField]
+    private int treeCount;
+
+    [SerializeField]
+    private int rockCount;
+
+    [SerializeField]
+    private List<GameObject> treePrefabs = new List<GameObject>();
+    [SerializeField]
+    private List<GameObject> rockPrefabs = new List<GameObject>();
+
+
     void Start()
     {
         terrainCreatorData = new List<TerrainCreatorData>();
         RandomGenerateTerrain();
+
+        // 랜덤 오브젝트 생성
+        RandomImplantObjects();
     }
     
     void Update()
     {
         
+    }
+
+    public void RandomImplantObjects()
+    {
+        Vector3 terrainStart = terrain.GetPosition();
+        Vector3 terrainEnd = terrainStart + terrain.terrainData.size;
+
+        int randomPrefab = 0;
+        if (0 != treePrefabs.Count)
+        {
+            for (int index = 0; index < treeCount; ++index)
+            {
+                randomPrefab = Random.Range(0, 1000);
+                int prefabIndex = randomPrefab % (treePrefabs.Count);
+
+                Vector3 implantPosition = new Vector3();
+                implantPosition.x = Random.Range(terrainStart.x, terrainEnd.x);
+                implantPosition.z = Random.Range(terrainStart.z, terrainEnd.z);
+                implantPosition.y = terrain.SampleHeight(implantPosition) + terrain.GetPosition().y;
+
+                int randomY = Random.Range(0, 360);
+                Quaternion rot = new Quaternion();
+                rot.eulerAngles = new Vector3(0, randomY, 0);
+
+                Instantiate(treePrefabs[prefabIndex], implantPosition, rot);
+            }
+        }
+
     }
 
 
@@ -177,6 +228,8 @@ public class TerrainCreator : MonoBehaviour
         //heights = terrain.GetHeights(50, 50, 100, 100);
     }
 
+
+    // 터레인 생성
     void RandomGenerateTerrain()
     {
         terrainCreatorData.Clear();
@@ -197,18 +250,17 @@ public class TerrainCreator : MonoBehaviour
 
         }
 
-        
-        
         for(int i =0;i< changeCount; ++i)
         {
             int randomIndexX = (int)(terrain.terrainData.heightmapWidth * Random.Range(0.0f, 1.0f));
             int randomIndexY = (int)(terrain.terrainData.heightmapHeight * Random.Range(0.0f, 1.0f));
 
+            float finalRoughnessFactor = Random.Range(0.0f, 1.0f) * roughnessFactor;
             // 자기자신부터 바뀌주고
-            ChangeTerrainHeightMapData(terrainCreatorData, (int)Mathf.Sqrt(terrainCreatorData.Count), randomIndexX, randomIndexY, roughnessFactor);
+            ChangeTerrainHeightMapData(terrainCreatorData, (int)Mathf.Sqrt(terrainCreatorData.Count), randomIndexX, randomIndexY, finalRoughnessFactor);
 
             // BFS로 높이 변경
-            ChangeNeighbors(terrainCreatorData, (int)Mathf.Sqrt(terrainCreatorData.Count), randomIndexX,  randomIndexY, roughnessFactor);
+            ChangeNeighbors(terrainCreatorData, (int)Mathf.Sqrt(terrainCreatorData.Count), randomIndexX,  randomIndexY, finalRoughnessFactor);
 
             // 다시 되돌려준다.
             for (int index =0; index < terrainSize; ++index)
@@ -240,7 +292,7 @@ public class TerrainCreator : MonoBehaviour
 
         Queue<TerrainQueueData> queue = new Queue<TerrainQueueData>();
         
-        float heigntToAdd = roughnessFactor - 0.1f;
+        float heigntToAdd = roughnessFactor - slope;
         print("halfRoughnessFactor" + heigntToAdd.ToString());
         if (heigntToAdd <= 0.05f)
         {
