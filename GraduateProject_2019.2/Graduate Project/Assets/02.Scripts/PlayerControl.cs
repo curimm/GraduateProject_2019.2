@@ -23,6 +23,8 @@ public class PlayerControl : MonoBehaviour
     [SerializeField]
     private Vector3 playerDirection;
 
+    [SerializeField]
+    private Animator animator;
 
     //void Awake()
     //{
@@ -50,13 +52,15 @@ public class PlayerControl : MonoBehaviour
         //tr = GetComponent("Transform") as Transform;
         //tr = (Transform)GetComponent(typeof(Transform));
 
+        animator = GetComponent<Animator>();
+
     }
     // Update is called once per frame
     void Update()
     {//활성화되야 실행.
      //핵심 로직 작성되있음.
      //매 프레임마다 실행->최적화에 주의->transform값 start에서 미리 접근시켜두고, position을 update에서 조금씩 바꾸기.
-     
+
         h = Input.GetAxis("Horizontal");
         v = Input.GetAxis("Vertical");
         j = Input.GetAxis("Jump");
@@ -64,8 +68,8 @@ public class PlayerControl : MonoBehaviour
         mouseY = Input.GetAxis("Mouse Y");
         mouseX = Input.GetAxis("Mouse X");
 
-        Vector3 rotation = new Vector3(0/*-mouseY*/, mouseX,0);
-        
+        Vector3 rotation = new Vector3(0/*-mouseY*/, mouseX, 0);
+
         tr.Rotate(rotation * rotationSpeed);
 
         //Debug.Log:키보드 입력되었을 때, 반환값 확인. 디버깅 정보 텍스트 형식으로 출력해줌.
@@ -86,14 +90,11 @@ public class PlayerControl : MonoBehaviour
         playerDirection = new Vector3(h, 0, v);
         playerDirection.Normalize();
         playerDirection = quat * playerDirection;
-        
 
+        // 실제 이동
         tr.position += (playerDirection * MoveSpeed * Time.deltaTime * (int)Space.Self);
 
         //tr.Translate(playerDirection * MoveSpeed * Time.deltaTime * (int)Space.Self);
-
-
-
 
         //if (Input.GetKey(KeyCode.W))
         //{
@@ -118,7 +119,26 @@ public class PlayerControl : MonoBehaviour
         //    tr.Translate(tr.right * MoveSpeed * Time.deltaTime * (int)Space.Self);
 
         //}
+
+        // 애니메이션 최신화
+        // move > idle 
+        if (h == 0 && v == 0)
+        {
+            animator.SetBool("isMoving", false);
+
+        }
+        else // idle > move
+        {
+            animator.SetBool("isMoving", true);
+            // move direction / speed
+            animator.SetFloat("positionX", h);
+            animator.SetFloat("positionY", v);
+        }
+
+
+
     }
+
     //void LateUpdate()
     //{
     //Update함수에서 전처리가 끝난 후 실행해야 하는 로직에 사용-->카메라 이동에 주로 사용.(?? update에 넣지 않는 이유: )
