@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 238171950}
   - component: {fileID: 238171949}
   - component: {fileID: 238171948}
+  - component: {fileID: 238171951}
   m_Layer: 0
   m_Name: Terrain
   m_TagString: Untagged
@@ -195,6 +196,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!64 &238171951
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 238171947}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 0
+  m_CookingOptions: 14
+  m_Mesh: {fileID: 0}
 --- !u!1 &479233465
 GameObject:
   m_ObjectHideFlags: 0
@@ -438,7 +453,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 3.6350876e-27, y: 0, z: 0, w: 3.8e-44}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -517,7 +532,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: a01389040defd7149851702d4eacc628,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.99
+      value: 9.32
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: a01389040defd7149851702d4eacc628,
         type: 3}
@@ -759,10 +774,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   terrain: {fileID: 238171949}
+  fixedTerrain: 1
   roughnessFactor: 1
   changeCount: 15
   defaultRandomHeightMax: 0.02
-  slope: 0.02
+  defaultHeight: 0.3
+  slope: 0.04
   treeCount: 20
   rockCount: 0
   treePrefabs:
@@ -1366,12 +1383,12 @@ PrefabInstance:
     - target: {fileID: 8350242704285652581, guid: 9123a5791440bd24195c816f50706bac,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.744
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8350242704285652581, guid: 9123a5791440bd24195c816f50706bac,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.199
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8350242704285652581, guid: 9123a5791440bd24195c816f50706bac,
         type: 3}
