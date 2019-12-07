@@ -23,6 +23,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField]
     private Vector3 playerDirection;
 
+
     //void Awake()
     //{
     //실행될때 한번 호출.
