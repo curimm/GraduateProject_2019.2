@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum DropObjectType
+{
+      Log
+    , Rock
+    , Grass
+    , Gold
+}
+
 public class PlayerControl : MonoBehaviour
 {
     private float h = 0.0f;
@@ -26,6 +34,11 @@ public class PlayerControl : MonoBehaviour
     [SerializeField]
     private Animator animator;
 
+    [SerializeField]
+    private int objectLogCount;
+    [SerializeField]
+    private int objectRockCount;
+
     //void Awake()
     //{
     //실행될때 한번 호출.
@@ -35,10 +48,16 @@ public class PlayerControl : MonoBehaviour
     //}
     // Start is called before the first frame update
     void Start()
-    {//Update 이전에 한번 호출.
-     //활성화되야 실행.
-     //다른 스크립트의 모든 Awake가 실행되고나서 실행됨.
-     //코루틴 실행 가능
+    {
+        //Update 이전에 한번 호출.
+        //활성화되야 실행.
+        //다른 스크립트의 모든 Awake가 실행되고나서 실행됨.
+        //코루틴 실행 가능
+
+        // init object count
+        objectLogCount = 0;
+        objectRockCount = 0;
+
 
         // 최적화 위해 start에서 미리 접근시켜두고, position을 update에서 조금씩 바꾸기.
         //스크립트 실행 후 처음 수행되는 start함수에 Transform 컴포넌트 할당.
@@ -166,4 +185,28 @@ public class PlayerControl : MonoBehaviour
     //{
     //(???)
     //}
+
+    public void ObtainObject(DropObjectType type)
+    {
+        switch (type)
+        {
+            case DropObjectType.Log:
+                {
+                    ++objectLogCount;
+                }
+                break;
+            case DropObjectType.Rock:
+                {
+                    ++objectRockCount;
+                }
+                break;
+            default:
+                {
+                    // 추후 더 추가
+                }
+                break;
+
+        }
+
+    }
 }

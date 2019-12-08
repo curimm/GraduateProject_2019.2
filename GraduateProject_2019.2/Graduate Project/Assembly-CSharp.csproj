@@ -64,6 +64,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\02.Scripts\CameraWalk.cs" />
+    <Compile Include="Assets\02.Scripts\DropObjectControl.cs" />
+    <Compile Include="Assets\02.Scripts\EnemyControl.cs" />
+    <Compile Include="Assets\02.Scripts\ObtainableObjectControl.cs" />
     <Compile Include="Assets\02.Scripts\PlayerControl.cs" />
     <Compile Include="Assets\02.Scripts\TerrainCreator.cs" />
     <Reference Include="Unity.Timeline.Editor">
