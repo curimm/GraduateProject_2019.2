@@ -43,7 +43,7 @@ public class EnemyControl : MonoBehaviour
         else // 공격 범위 바깥
         {
             animator.SetBool("isMoving", true);
-            animator.SetFloat("PositionY", 1.0f);
+            animator.SetFloat("positionY", 1.0f);
             animator.SetBool("isAttacking", false);
         }
 

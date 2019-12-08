@@ -20,6 +20,11 @@ public class PlayerControl : MonoBehaviour
 
     //접근하는 컴포넌트는 변수에 할당 후 사용.--> 하지 않았을 경우, 어떤 단점있는지(??)
     private Transform tr;
+
+    [SerializeField]
+    private GameObject axe;
+    private BoxCollider axeCol;
+
     //이동 속도 변수(public = Inspector에 노출시킴)
     [SerializeField]
     private float MoveSpeed = 10.0f;
@@ -38,6 +43,7 @@ public class PlayerControl : MonoBehaviour
     private int objectLogCount;
     [SerializeField]
     private int objectRockCount;
+
 
     //void Awake()
     //{
@@ -73,6 +79,7 @@ public class PlayerControl : MonoBehaviour
 
         animator = GetComponent<Animator>();
 
+        axeCol = axe.GetComponent<BoxCollider>();
     }
     // Update is called once per frame
     void Update()
@@ -139,23 +146,7 @@ public class PlayerControl : MonoBehaviour
 
         //}
 
-        // 애니메이션 최신화
-        // move > idle 
-        if (h == 0 && v == 0)
-        {
-            animator.SetBool("isMoving", false);
-
-        }
-        else // idle > move
-        {
-            animator.SetBool("isMoving", true);
-            // move direction / speed
-            animator.SetFloat("positionX", h);
-            animator.SetFloat("positionY", v);
-        }
-
-
-
+        UpdateAnimation();
     }
 
     //void LateUpdate()
@@ -185,6 +176,41 @@ public class PlayerControl : MonoBehaviour
     //{
     //(???)
     //}
+
+    public void UpdateAnimation()
+    {
+        if (true == Input.GetMouseButton(0))
+        {
+            animator.SetBool("isMoving", false);
+            animator.SetBool("isDigging", true);
+            // 콜라이더 활성화
+            axeCol.enabled = true;
+        }
+        else
+        {
+            animator.SetBool("isDigging", false);
+            // 콜라이더 비활성화
+            axeCol.enabled = false;
+        }
+
+        // 애니메이션 최신화
+        // move > idle 
+        if (h == 0 && v == 0)
+        {
+            animator.SetBool("isMoving", false);
+
+        }
+        else // idle > move
+        {
+            animator.SetBool("isMoving", true);
+            // move direction / speed
+            animator.SetFloat("positionX", h);
+            animator.SetFloat("positionY", v);
+        }
+
+
+
+    }
 
     public void ObtainObject(DropObjectType type)
     {

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// 터레인 생성을 위한 데이터
+// height : 실제 터레인 높이
+// isSearched : 순차적으로 주변 높이도 올려주기 위한 변수 // 높이 적용을 한번만 하기 위한 변수
 public class TerrainCreatorData
 {
     public TerrainCreatorData(float height)
@@ -60,16 +63,16 @@ public class TerrainCreator : MonoBehaviour
 
     // 생성할 산의 최대 높이
     [SerializeField]
-    private float roughnessFactor = 0.51f;
+    private float roughnessFactor;
     // change 될경우 얼마나 올라갈지 지정
 
     // 생성할 산의 개수
     [SerializeField]
-    private int changeCount = 5;
+    private int changeCount;
 
     // 처음 생성할때의 렌덤 최대 높이
     [SerializeField]
-    private float defaultRandomHeightMax = 0.01f;
+    private float defaultRandomHeightMax;
 
     // 처음 터레인을 생성할때의 높이
     [SerializeField]
@@ -245,52 +248,49 @@ public class TerrainCreator : MonoBehaviour
     void RandomGenerateTerrain()
     {
         terrainCreatorData.Clear();
-        int terrainSize = terrain.terrainData.heightmapWidth * terrain.terrainData.heightmapHeight;
-        for (int i =0; i< terrainSize; ++i)
-        {
-            // 랜덤하게 height를 1/4확률로 넣는다.
-            float randomHeight = Random.Range(0.0f, defaultRandomHeightMax);
-            int randomGen =(int) (randomHeight * 1000.0f);
-            if (randomGen % 4 == 0)
-            {
-                terrainCreatorData.Add(new TerrainCreatorData(randomHeight + defaultHeight));
-            }
-            else
-            {
-                terrainCreatorData.Add(new TerrainCreatorData(defaultHeight));
-            }
 
+        // 랜덤한 지형 만들기 위한 처리
+        {
+            // 외부 터레인 사이즈를 받아와서 
+            int terrainSize = terrain.terrainData.heightmapWidth * terrain.terrainData.heightmapHeight;
+            for (int i = 0; i < terrainSize; ++i)
+            {
+                // 랜덤하게 height를 1/4확률로 넣는다.
+                float randomHeight = Random.Range(0.0f, defaultRandomHeightMax);
+                int randomGen = (int)(randomHeight * 1000.0f);
+                if (randomGen % 4 == 0)
+                {
+                    terrainCreatorData.Add(new TerrainCreatorData(randomHeight + defaultHeight));
+                }
+                else
+                {
+                    terrainCreatorData.Add(new TerrainCreatorData(defaultHeight));
+                }
+
+            }
         }
 
-        for(int i =0;i< changeCount; ++i)
+
+        // 산들을 만들어 준다
         {
-            int randomIndexX = (int)(terrain.terrainData.heightmapWidth * Random.Range(0.0f, 1.0f));
-            int randomIndexY = (int)(terrain.terrainData.heightmapHeight * Random.Range(0.0f, 1.0f));
+            for (int i = 0; i < changeCount; ++i)
+            {
+                // 터레인의 랜덤한 인덱스를 받아서 처리
+                int randomIndexX = (int)(terrain.terrainData.heightmapWidth * Random.Range(0.0f, 1.0f));
+                int randomIndexY = (int)(terrain.terrainData.heightmapHeight * Random.Range(0.0f, 1.0f));
 
-            float finalRoughnessFactor = Random.Range(0.0f, 1.0f) * roughnessFactor;
+                // 최대 산의 높이의 0.0배 ~ 1.0배까지 랜덤한 산의 높이를 만든다.
+                float finalRoughnessFactor = Random.Range(0.0f, 1.0f) * roughnessFactor;
 
-
-            MakeHigher(terrainCreatorData, (int)Mathf.Sqrt(terrainCreatorData.Count), randomIndexX, randomIndexY, finalRoughnessFactor, 1);
-
-            //// 자기자신부터 바뀌주고
-            //ChangeTerrainHeightMapData(terrainCreatorData, (int)Mathf.Sqrt(terrainCreatorData.Count), randomIndexX, randomIndexY, finalRoughnessFactor);
-
-            //// BFS로 높이 변경
-            //ChangeNeighbors(terrainCreatorData, (int)Mathf.Sqrt(terrainCreatorData.Count), randomIndexX,  randomIndexY, finalRoughnessFactor);
-
-            //// 다시 되돌려준다.
-            //for (int index =0; index < terrainSize; ++index)
-            //{
-            //    terrainCreatorData[index].isSearched = false;
-            //}
+                MakeHigher(terrainCreatorData, (int)Mathf.Sqrt(terrainCreatorData.Count), randomIndexX, randomIndexY, finalRoughnessFactor, 1);
+            }
         }
 
-        // 특정위치에 정해진 지형 추가
-        MakeHigher(terrainCreatorData, (int)Mathf.Sqrt(terrainCreatorData.Count), terrain.terrainData.heightmapWidth / 2, terrain.terrainData.heightmapHeight / 2, 0.5f, 1);
 
-        // 특정위치에 정해진 지형 추가
-        //MakeLower(terrainCreatorData, (int)Mathf.Sqrt(terrainCreatorData.Count), terrain.terrainData.heightmapWidth / 3, terrain.terrainData.heightmapHeight / 3, 0.5f, 5);
+        //// 특정위치에 정해진 지형 추가
+        //MakeHigher(terrainCreatorData, (int)Mathf.Sqrt(terrainCreatorData.Count), terrain.terrainData.heightmapWidth / 2, terrain.terrainData.heightmapHeight / 2, 0.5f, 1);
 
+        // 만들어 두었던 데이터를 가지고 실제 터레인에 적용해준다.
         float[,] convertedData = getHeightDataFromTerrainCreatorData(terrainCreatorData);
         if (null != convertedData)
         {
@@ -314,12 +314,13 @@ public class TerrainCreator : MonoBehaviour
         Queue<TerrainQueueData> queue = new Queue<TerrainQueueData>();
         
         float heigntToAdd = roughnessFactor - slope;
-        print("halfRoughnessFactor" + heigntToAdd.ToString());
+//        print("halfRoughnessFactor" + heigntToAdd.ToString());
         if (heigntToAdd <= 0.0f)
         {
             return;
         }
 
+        // 주변의 노드들을 큐에 넣고
         queue.Enqueue(new TerrainQueueData(indexX, indexY + 1, heigntToAdd));
         queue.Enqueue(new TerrainQueueData(indexX, indexY - 1, heigntToAdd));
         queue.Enqueue(new TerrainQueueData(indexX + 1, indexY, heigntToAdd));
@@ -328,6 +329,8 @@ public class TerrainCreator : MonoBehaviour
         queue.Enqueue(new TerrainQueueData(indexX - 1, indexY - 1, heigntToAdd));
 
         TerrainQueueData qData;
+        // 큐에 데이터가 없을떄까지 디큐를 하면서 점점 낮아지는 높이를 적용해준다.
+        // 만약에 처음 탐색되었다면, 주변노드를 큐에 넣어준다.
         while (0 != queue.Count)
         {
             qData = queue.Dequeue();
@@ -335,7 +338,7 @@ public class TerrainCreator : MonoBehaviour
             {
                 heigntToAdd = qData.heigntToAdd - slope;
 
-                if (heigntToAdd <= 0.05f)
+                if (heigntToAdd <= 0.0f)
                 {
                     continue;
                 }
@@ -391,9 +394,12 @@ public class TerrainCreator : MonoBehaviour
 
         for(int i =0; i<count; ++i)
         {
+            // 먼저 자기자신의 높이를 높여준다.
             ChangeTerrainHeightMapData(terrainCreatorData, widthOrHeight, indexX, indexY, factor);
+            // 주변의 높이를 높여준다.
             ChangeNeighbors(terrainCreatorData, widthOrHeight, indexX, indexY, factor);
 
+            // 한번 산이 만들어졌으면 탐색한 정보를 지워준다.
             for (int index = 0; index < terrainSize; ++index)
             {
                 terrainCreatorData[index].isSearched = false;

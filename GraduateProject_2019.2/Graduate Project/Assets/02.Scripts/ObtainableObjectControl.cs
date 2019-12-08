@@ -24,6 +24,7 @@ public class ObtainableObjectControl : MonoBehaviour
         
     }
 
+    // enduracne가 0이 되었을 때 이 객체를 파괴하고, 실제 획득할 수 있는 아이템을 만들어 준다.
     void DropObject()
     {
         Instantiate(dropObject, transform.position + new Vector3(0, 2, 0), transform.rotation);
@@ -31,16 +32,33 @@ public class ObtainableObjectControl : MonoBehaviour
     }
 
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if("Player" == collision.gameObject.tag)
-        {
-            --enduranceCount;
-        }
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    print("1");
+    //    if("Axe" == collision.gameObject.tag)
+    //    {
 
-        if(enduranceCount <= 0)
+    //        print(collision.gameObject.tag);
+    //        --enduranceCount;
+
+    //        if (enduranceCount <= 0)
+    //        {
+    //            DropObject();
+    //        }
+    //    }
+    //}
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if ("Axe" == other.gameObject.tag)
         {
-            DropObject();
+            print(other.gameObject.tag);
+            --enduranceCount;
+
+            if (enduranceCount <= 0)
+            {
+                DropObject();
+            }
         }
     }
 }

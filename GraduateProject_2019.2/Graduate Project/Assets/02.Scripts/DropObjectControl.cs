@@ -15,7 +15,7 @@ public class DropObjectControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Rotate(new Vector3(0, 3, 0));
+        transform.Rotate(new Vector3(0, 2 * Time.deltaTime, 0));
     }
 
     private void OnCollisionEnter(Collision collision)
